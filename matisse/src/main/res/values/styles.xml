@@ -83,4 +83,8 @@
         <item name="android:popupBackground">@color/dracula_album_popup_bg</item>
     </style>
 
+    <style name="CheckBox" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/zhihu_primary</item>
+        <item name="colorControlActivated">@color/zhihu_primary_dark</item>
+    </style>
 </resources>

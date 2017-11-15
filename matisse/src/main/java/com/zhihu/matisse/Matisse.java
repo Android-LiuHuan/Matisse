@@ -96,6 +96,10 @@ public final class Matisse {
         return data.getStringArrayListExtra(MatisseActivity.EXTRA_RESULT_SELECTION_PATH);
     }
 
+    public static boolean obtainIsOriginal(Intent data){
+        return data.getBooleanExtra(MatisseActivity.EXTRA_RESULT_ORIGINAL, false);
+    }
+
     /**
      * MIME types the selection constrains on.
      * <p>

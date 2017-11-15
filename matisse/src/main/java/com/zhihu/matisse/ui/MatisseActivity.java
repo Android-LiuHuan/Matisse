@@ -34,6 +34,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.zhihu.matisse.R;
@@ -66,6 +67,7 @@ public class MatisseActivity extends AppCompatActivity implements
 
     public static final String EXTRA_RESULT_SELECTION = "extra_result_selection";
     public static final String EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path";
+    public static final String EXTRA_RESULT_ORIGINAL = "extra_result_original";
     private static final int REQUEST_CODE_PREVIEW = 23;
     private static final int REQUEST_CODE_CAPTURE = 24;
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
@@ -79,6 +81,7 @@ public class MatisseActivity extends AppCompatActivity implements
     private TextView mButtonApply;
     private View mContainer;
     private View mEmptyView;
+    private CheckBox check_original;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,6 +114,7 @@ public class MatisseActivity extends AppCompatActivity implements
         ta.recycle();
         navigationIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
 
+        check_original = (CheckBox) findViewById(R.id.check_original);
         mButtonPreview = (TextView) findViewById(R.id.button_preview);
         mButtonApply = (TextView) findViewById(R.id.button_apply);
         mButtonPreview.setOnClickListener(this);
@@ -167,6 +171,7 @@ public class MatisseActivity extends AppCompatActivity implements
             return;
 
         if (requestCode == REQUEST_CODE_PREVIEW) {
+            check_original.setChecked(data.getBooleanExtra(MatisseActivity.EXTRA_RESULT_ORIGINAL, false));
             Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
             ArrayList<Item> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
             int collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
@@ -183,6 +188,7 @@ public class MatisseActivity extends AppCompatActivity implements
                 }
                 result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
+                result.putExtra(EXTRA_RESULT_ORIGINAL, check_original.isChecked());
                 setResult(RESULT_OK, result);
                 finish();
             } else {
@@ -205,6 +211,7 @@ public class MatisseActivity extends AppCompatActivity implements
             Intent result = new Intent();
             result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selected);
             result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPath);
+            result.putExtra(EXTRA_RESULT_ORIGINAL, check_original.isChecked());
             setResult(RESULT_OK, result);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
                 MatisseActivity.this.revokeUriPermission(contentUri,
@@ -217,14 +224,17 @@ public class MatisseActivity extends AppCompatActivity implements
         int selectedCount = mSelectedCollection.count();
         if (selectedCount == 0) {
             mButtonPreview.setEnabled(false);
+            check_original.setEnabled(false);
             mButtonApply.setEnabled(false);
             mButtonApply.setText(getString(R.string.button_apply_default));
         } else if (selectedCount == 1 && mSpec.singleSelectionModeEnabled()) {
             mButtonPreview.setEnabled(true);
             mButtonApply.setText(R.string.button_apply_default);
             mButtonApply.setEnabled(true);
+            check_original.setEnabled(true);
         } else {
             mButtonPreview.setEnabled(true);
+            check_original.setEnabled(true);
             mButtonApply.setEnabled(true);
             mButtonApply.setText(getString(R.string.button_apply, selectedCount));
         }
@@ -235,6 +245,7 @@ public class MatisseActivity extends AppCompatActivity implements
         if (v.getId() == R.id.button_preview) {
             Intent intent = new Intent(this, SelectedPreviewActivity.class);
             intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+            intent.putExtra(EXTRA_RESULT_ORIGINAL, check_original.isChecked());
             startActivityForResult(intent, REQUEST_CODE_PREVIEW);
         } else if (v.getId() == R.id.button_apply) {
             Intent result = new Intent();
@@ -242,6 +253,7 @@ public class MatisseActivity extends AppCompatActivity implements
             result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
             ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
             result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
+            result.putExtra(EXTRA_RESULT_ORIGINAL, check_original.isChecked());
             setResult(RESULT_OK, result);
             finish();
         }
@@ -316,6 +328,7 @@ public class MatisseActivity extends AppCompatActivity implements
         intent.putExtra(AlbumPreviewActivity.EXTRA_ALBUM, album);
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
+        intent.putExtra(EXTRA_RESULT_ORIGINAL, check_original.isChecked());
         startActivityForResult(intent, REQUEST_CODE_PREVIEW);
     }
 

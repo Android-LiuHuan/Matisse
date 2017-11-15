@@ -23,6 +23,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.zhihu.matisse.R;
@@ -34,6 +35,7 @@ import com.zhihu.matisse.internal.ui.adapter.PreviewPagerAdapter;
 import com.zhihu.matisse.internal.ui.widget.CheckView;
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
 import com.zhihu.matisse.internal.utils.Platform;
+import com.zhihu.matisse.ui.MatisseActivity;
 
 public abstract class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
         ViewPager.OnPageChangeListener {
@@ -52,6 +54,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
     protected TextView mButtonBack;
     protected TextView mButtonApply;
     protected TextView mSize;
+    protected CheckBox check_original;
 
     protected int mPreviousPos = -1;
 
@@ -77,9 +80,11 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
 
         mButtonBack = (TextView) findViewById(R.id.button_back);
         mButtonApply = (TextView) findViewById(R.id.button_apply);
+        check_original = (CheckBox) findViewById(R.id.check_original);
         mSize = (TextView) findViewById(R.id.size);
         mButtonBack.setOnClickListener(this);
         mButtonApply.setOnClickListener(this);
+        check_original.setChecked(getIntent().getBooleanExtra(MatisseActivity.EXTRA_RESULT_ORIGINAL, false));
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.addOnPageChangeListener(this);
@@ -182,28 +187,32 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         if (selectedCount == 0) {
             mButtonApply.setText(R.string.button_apply_default);
             mButtonApply.setEnabled(false);
+            check_original.setEnabled(false);
         } else if (selectedCount == 1 && mSpec.singleSelectionModeEnabled()) {
             mButtonApply.setText(R.string.button_apply_default);
             mButtonApply.setEnabled(true);
+            check_original.setEnabled(true);
         } else {
             mButtonApply.setEnabled(true);
             mButtonApply.setText(getString(R.string.button_apply, selectedCount));
+            check_original.setEnabled(true);
         }
     }
 
     protected void updateSize(Item item) {
-        if (item.isGif()) {
-            mSize.setVisibility(View.VISIBLE);
-            mSize.setText(PhotoMetadataUtils.getSizeInMB(item.size) + "M");
-        } else {
-            mSize.setVisibility(View.GONE);
-        }
+//        if (item.isGif()) {
+//            mSize.setVisibility(View.VISIBLE);
+//            mSize.setText(PhotoMetadataUtils.getSizeInMB(item.size) + "M");
+//        } else {
+//            mSize.setVisibility(View.GONE);
+//        }
     }
 
     protected void sendBackResult(boolean apply) {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_RESULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(EXTRA_RESULT_APPLY, apply);
+        intent.putExtra(MatisseActivity.EXTRA_RESULT_ORIGINAL, check_original.isChecked());
         setResult(Activity.RESULT_OK, intent);
     }
 
