@@ -85,6 +85,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         mButtonBack.setOnClickListener(this);
         mButtonApply.setOnClickListener(this);
         check_original.setChecked(getIntent().getBooleanExtra(MatisseActivity.EXTRA_RESULT_ORIGINAL, false));
+        check_original.setVisibility(mSpec.original ? View.VISIBLE : View.GONE);
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.addOnPageChangeListener(this);

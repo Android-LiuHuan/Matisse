@@ -302,4 +302,13 @@ public final class SelectionCreator {
         }
     }
 
+    /**
+     * 是否显示原图选择
+     * @param original
+     * @return
+     */
+    public SelectionCreator original(boolean original){
+        mSelectionSpec.original = original;
+        return this;
+    }
 }

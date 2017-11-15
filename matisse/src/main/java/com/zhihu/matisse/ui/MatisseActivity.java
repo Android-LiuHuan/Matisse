@@ -121,6 +121,7 @@ public class MatisseActivity extends AppCompatActivity implements
         mButtonApply.setOnClickListener(this);
         mContainer = findViewById(R.id.container);
         mEmptyView = findViewById(R.id.empty_view);
+        check_original.setVisibility(mSpec.original ? View.VISIBLE : View.GONE);
 
         mSelectedCollection.onCreate(savedInstanceState);
         updateBottomToolbar();
